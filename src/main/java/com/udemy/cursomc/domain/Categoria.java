@@ -1,12 +1,22 @@
 package com.udemy.cursomc.domain;
 
-import java.io.Serializable;
-
 // Serializable é uma interface que diz que essa classe e seus objetos poderão ser convertidos em 
 //uma sequência de bytes
+import java.io.Serializable;
+
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+
+
+@Entity//indica que essa classe vai ser uma entidade do JPA
 public class Categoria implements Serializable {
 
 	private static final long serialVersionUID = 1L;//versão 1 da classe
+	
+	@Id//indica que esse campo é a chave primária da tabela
+	@GeneratedValue(strategy=GenerationType.IDENTITY)//indica como será gerada a PK
 	private Integer id;
 	private String nome;
 
