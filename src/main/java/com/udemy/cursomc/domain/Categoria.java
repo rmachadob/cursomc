@@ -3,23 +3,29 @@ package com.udemy.cursomc.domain;
 // Serializable é uma interface que diz que essa classe e seus objetos poderão ser convertidos em 
 //uma sequência de bytes
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.ManyToMany;
 
 
 @Entity//indica que essa classe vai ser uma entidade do JPA
 public class Categoria implements Serializable {
 
 	private static final long serialVersionUID = 1L;//versão 1 da classe
-	
+
 	@Id//indica que esse campo é a chave primária da tabela
 	@GeneratedValue(strategy=GenerationType.IDENTITY)//indica como será gerada a PK
 	private Integer id;
 	private String nome;
-
+	
+	@ManyToMany(mappedBy="categorias")//desse lado podemos só indicar onde foi feito o mapping
+	private List<Produto> produtos = new ArrayList<>();//diagrama: uma categoria tem vários produtos, por isso uma List
+//tambem tem que inicializar a lista
 	public Categoria() {
 	}
 
@@ -42,6 +48,14 @@ public class Categoria implements Serializable {
 
 	public void setNome(String nome) {
 		this.nome = nome;
+	}
+	
+	public List<Produto> getProdutos() {
+		return produtos;
+	}
+
+	public void setProdutos(List<Produto> produtos) {
+		this.produtos = produtos;
 	}
 
 	@Override
@@ -68,6 +82,8 @@ public class Categoria implements Serializable {
 			return false;
 		return true;
 	}
+
+	
 
 
 
