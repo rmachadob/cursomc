@@ -1,41 +1,35 @@
 package com.udemy.cursomc.domain;
 
-// Serializable é uma interface que diz que essa classe e seus objetos poderão ser convertidos em 
-//uma sequência de bytes
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.ManyToMany;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+@Entity
+public class Cidade implements Serializable {
 
-
-@Entity//indica que essa classe vai ser uma entidade do JPA
-public class Categoria implements Serializable {
-
-	private static final long serialVersionUID = 1L;//versão 1 da classe
+	private static final long serialVersionUID = 1L;
 
 	@Id//indica que esse campo é a chave primária da tabela
 	@GeneratedValue(strategy=GenerationType.IDENTITY)//indica como será gerada a PK
 	private Integer id;
 	private String nome;
+	@ManyToOne//sempre em cima do atributo associado
+	@JoinColumn(name="estado_id")//define o nome da FK da tabela cidade no BD
+	private Estado estado;//cada cidade tem somente um estado, então não uso List
 
-	@JsonManagedReference//anotação do lado que vc quer que venham os objetos associados. proteção da referência cíclica na serialização do json
-	@ManyToMany(mappedBy="categorias")//desse lado podemos só indicar onde foi feito o mapping
-	private List<Produto> produtos = new ArrayList<>();//diagrama: uma categoria tem vários produtos, por isso uma List tambem tem que inicializar a lista
+	public Cidade() {
+			}
 
-
-	public Categoria() {
-	}
-
-	public Categoria(Integer id, String nome) {
+	public Cidade(Integer id, String nome, Estado estado) {
+		super();
 		this.id = id;
 		this.nome = nome;
+		this.estado = estado;
 	}
 
 	public Integer getId() {
@@ -54,12 +48,12 @@ public class Categoria implements Serializable {
 		this.nome = nome;
 	}
 
-	public List<Produto> getProdutos() {
-		return produtos;
+	public Estado getEstado() {
+		return estado;
 	}
 
-	public void setProdutos(List<Produto> produtos) {
-		this.produtos = produtos;
+	public void setEstado(Estado estado) {
+		this.estado = estado;
 	}
 
 	@Override
@@ -78,7 +72,7 @@ public class Categoria implements Serializable {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		Categoria other = (Categoria) obj;
+		Cidade other = (Cidade) obj;
 		if (id == null) {
 			if (other.id != null)
 				return false;
@@ -86,9 +80,7 @@ public class Categoria implements Serializable {
 			return false;
 		return true;
 	}
-
-
-
-
-
+	
+	
+	
 }
