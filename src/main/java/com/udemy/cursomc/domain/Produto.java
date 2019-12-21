@@ -15,6 +15,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 @Entity
 public class Produto implements Serializable {
 	private static final long serialVersionUID = 1L;
@@ -25,6 +27,7 @@ public class Produto implements Serializable {
 	private String nome;
 	private Double preco;
 
+	@JsonBackReference//diz que do outro lado da associação já foram buscados os objetos, então agora eu não busco mais. ele vai omitir a lista de categorias para cada produto, barrando a referência cíclica
 	@ManyToMany//relacionamento muitos pra muitos
 	@JoinTable(name = "PRODUTO_CATEGORIA",//define qual a entidade associativa
 	joinColumns = @JoinColumn(name="produto_id"),//nome da FK

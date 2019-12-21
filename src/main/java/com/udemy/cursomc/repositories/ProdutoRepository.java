@@ -13,5 +13,5 @@ import com.udemy.cursomc.domain.Produto;
 //essa categoria já está mapeada no BD 
 public interface ProdutoRepository extends JpaRepository<Produto, Integer>{
 
-	
+
 }
