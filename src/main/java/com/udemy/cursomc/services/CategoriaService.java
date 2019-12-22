@@ -17,9 +17,11 @@ public class CategoriaService {
 	@Autowired
 	private CategoriaRepository repo;	
 
-	public Categoria find(Integer id) {
+	//	 e esse metodo recebe uma função que instancia uma exceção
+	//	para facilitar usamos uma expressão lambda
+	public Categoria find(Integer id) {//usamos o find id normal, ele vai retornar um optional
 		Optional<Categoria> obj = repo.findById(id);
-		return obj.orElseThrow(() -> new ObjectNotFoundException(
+		return obj.orElseThrow(() -> new ObjectNotFoundException(//	retorna um objeto ou senão existir, lança um exceção chamando o metodo orElseThrow
 				"Objeto não encontrado! Id: " + id + ", Tipo: " + Categoria.class.getName())); 
 	}
 

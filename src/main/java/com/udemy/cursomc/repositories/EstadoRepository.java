@@ -6,7 +6,6 @@ import org.springframework.stereotype.Repository;
 import com.udemy.cursomc.domain.Estado;
 
 @Repository
-
 public interface EstadoRepository extends JpaRepository<Estado, Integer>{
 
 	
