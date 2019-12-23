@@ -14,6 +14,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.udemy.cursomc.domain.enums.TipoCliente;
 @Entity
 public class Cliente implements Serializable{
@@ -27,6 +28,7 @@ public class Cliente implements Serializable{
 	private String cpfOuCnpj;
 	private Integer tipo;//enum TipoCliente. internamente (nessa classe) o TipoCliente é armazenado como inteiro, mas para o mundo externo expõe um dado do tipo TipoCliente
 
+	@JsonManagedReference//apenas o cliente irá serializar, e nao o endereço
 	@OneToMany(mappedBy="cliente")//aponta o lado q foi feito o mapeamento
 	private List<Endereco> enderecos = new ArrayList<>();
 
