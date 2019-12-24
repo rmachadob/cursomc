@@ -1,19 +1,17 @@
 package com.udemy.cursomc.domain.enums;
 
-public enum TipoCliente {
+public enum EstadoPagamento {
 
-	PESSOAFISICA(1, "Pessoa Física"),
-	PESSOAJURIDICA(2, "Pessoa Jurídica");
+	PENDENTE(1, "Pendente"), 
+	QUITADO(2, "Quitado"),
+	CANCELADO(3, "Cancelado");
 
 	private int cod;
 	private String descricao;
 
-	//construtor de enumerado é private
-	private TipoCliente(int cod, String descricao) {
-
+	private EstadoPagamento(Integer cod, String descricao) {
 		this.cod=cod;
 		this.descricao=descricao;
-
 	}
 	//apenas os gets, em tipos enumerados uma vez instanciado nao se altera
 	public int getCod() {
@@ -23,14 +21,14 @@ public enum TipoCliente {
 	public String getDescricao() {
 		return descricao;
 	}
-//converter um int para o TipoCliente
-	public static TipoCliente toEnum(Integer cod) {
+	//converter um int para o EstadoPagamento
+	public static EstadoPagamento toEnum(Integer cod) {
 
 		if(cod==null) {
 			return null;
 		}
 
-		for(TipoCliente x : TipoCliente.values()) {//todo objeto x nos valores possiveis do TipoCLiente
+		for(EstadoPagamento x : EstadoPagamento.values()) {//todo objeto x nos valores possiveis do TipoCLiente
 			if(cod.equals(x.getCod())) {
 				return x;
 			}
