@@ -5,6 +5,8 @@ import java.io.Serializable;
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 //classe de associacao (nao tem id proprio, quem identifica sao os 2 objetos associados a ela, Produto e Pedido)
 //classe auxiliar ItemPedidoPK para compor a chave composta
 @Entity
@@ -12,6 +14,7 @@ public class ItemPedido implements Serializable{
 
 	private static final long serialVersionUID = 1L;
 
+	@JsonIgnore//a partir do itemPedido ele nao serializa ninguem, nem pedido nem produto
 	@EmbeddedId//Id embutido em uma classe auxiliar
 	private ItemPedidoPK id = new ItemPedidoPK();//essa classe tem como id um objeto desse tipo
 
@@ -32,6 +35,7 @@ public class ItemPedido implements Serializable{
 		//o itemPedidoPK é uma peculiaridade do JPA, para os devs q vao usar a classe esse objeto nao faz sentido, entao eu troco por pedido e produto
 	}
 
+	@JsonIgnore
 	public Pedido getPedido() {
 		return id.getPedido();//acessa direto o obj pedido fora da minha clase ItemPedido
 	}

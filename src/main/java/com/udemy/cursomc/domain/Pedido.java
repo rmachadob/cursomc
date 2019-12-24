@@ -14,6 +14,9 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 @Entity
 public class Pedido implements Serializable {
 
@@ -21,10 +24,13 @@ public class Pedido implements Serializable {
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private Integer id;
+	@JsonFormat(pattern ="dd/MM/yyyy HH:mm")
 	private Date instante;
 
+	@JsonManagedReference
 	@OneToOne(cascade=CascadeType.ALL, mappedBy="pedido")//senao da erro de entidade transiente quando for salvar um pedido e o pagamento dele
 	private Pagamento pagamento;
+	@JsonManagedReference
 	@ManyToOne
 	@JoinColumn(name="cliente_id")
 	private Cliente cliente;
@@ -32,6 +38,7 @@ public class Pedido implements Serializable {
 	@JoinColumn(name="endereco_de_entrega_id")
 	private Endereco enderecoDeEntrega;
 
+	//como do outro lado useiJsonIgnore e ele ja serializa automatico nao preciso da anotacao @JsonManagedReference
 	@OneToMany(mappedBy = "id.pedido")//no itemPedido tem o objeto id, obj auxiliar que tem a referencia para o pedido
 	private Set<ItemPedido> itens = new HashSet<>();//para conhecer os itensPedido associados a ela. Set já me ajuda a nao ter repetido
 

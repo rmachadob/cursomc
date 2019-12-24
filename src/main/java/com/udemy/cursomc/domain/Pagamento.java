@@ -10,6 +10,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.MapsId;
 import javax.persistence.OneToOne;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.udemy.cursomc.domain.enums.EstadoPagamento;
 @Entity
 @Inheritance(strategy=InheritanceType.JOINED)//parametro indicando a estrategia para gerar a tabela no banco
@@ -20,7 +21,7 @@ public abstract class Pagamento implements Serializable {
 	@Id
 	private Integer id;
 	private Integer estado;//Integer e nao EstadoPagamento pq no enum eu fiz o metodo
-
+	@JsonBackReference
 	@OneToOne
 	@JoinColumn(name="pedido_id")
 	@MapsId//garante que o id do pagamento é o mesmo do pedido (PK e FK sao iguais)
