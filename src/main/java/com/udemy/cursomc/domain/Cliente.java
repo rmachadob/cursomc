@@ -14,8 +14,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.udemy.cursomc.domain.enums.TipoCliente;
 @Entity
 public class Cliente implements Serializable{
@@ -29,7 +28,7 @@ public class Cliente implements Serializable{
 	private String cpfOuCnpj;
 	private Integer tipo;//enum TipoCliente. internamente (nessa classe) o TipoCliente é armazenado como inteiro, mas para o mundo externo expõe um dado do tipo TipoCliente
 
-	@JsonManagedReference//apenas o cliente irá serializar, e nao o endereço
+	
 	@OneToMany(mappedBy="cliente")//aponta o lado q foi feito o mapeamento
 	private List<Endereco> enderecos = new ArrayList<>();
 
@@ -38,7 +37,7 @@ public class Cliente implements Serializable{
 	@CollectionTable(name="TELEFONE")//passo o nome da tabela 
 	private Set<String> telefones = new HashSet<>();//Set é um conjunto que não aceita repetição
 	
-	@JsonBackReference
+	@JsonIgnore
 	@OneToMany(mappedBy="cliente")	
 	private List<Pedido> pedidos= new ArrayList<>();
 	
