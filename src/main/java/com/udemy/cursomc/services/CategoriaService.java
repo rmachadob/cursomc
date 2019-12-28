@@ -24,6 +24,12 @@ public class CategoriaService {
 		return obj.orElseThrow(() -> new ObjectNotFoundException(//	retorna um objeto ou senão existir, lança um exceção chamando o metodo orElseThrow
 				"Objeto não encontrado! Id: " + id + ", Tipo: " + Categoria.class.getName())); 
 	}
+	
+	public Categoria insert(Categoria obj) {
+		obj.setId(null);//garante que realmente insere um obj novo. Se o id estiver valendo algo o metodo save vai entender como atualização e não inserção
+		return repo.save(obj);
+		
+	}
 
 
 }

@@ -1,11 +1,15 @@
 package com.udemy.cursomc.resources;
+import java.net.URI;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 //anotação com o ctrl shift O ele já acha e importa a dependência correspondente
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.udemy.cursomc.domain.Categoria;
 import com.udemy.cursomc.services.CategoriaService;
@@ -29,6 +33,21 @@ public class CategoriaResource {
 		return ResponseEntity.ok().body(obj);//ok para indicar que houve sucesso na operação
 	}
 
+	//void = retorna uma resposta http mas sem corpo
+	@RequestMapping(method=RequestMethod.POST)//POST pq eh pra criar
+	public ResponseEntity<Void> insert(@RequestBody Categoria obj){//@RequestBody faz o JSON ser voncertido para o obj java automaticamente
+		//chama o serviço q insere a nova categoria no BD
+		obj = service.insert(obj);//a operação save do repository retorna um objeto, por isso eu guardo no obj
+
+		URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").
+				buildAndExpand(obj.getId()).toUri();
+		//fromCurrentRequest pega a URI que usamos para inserir, nesse caso categoria
+		//path("/{id}" pega a URI e acrescenta o id do objeto que foi criado
+		//buildAndExpand atribui o novo valor e converte para URI (toUri)
+		return ResponseEntity.created(uri).build();//esse created recebe a URI como argumento e eh o metodo que me devolve o codigo http, nesse caso 201(Created)
+		//build para gerar essa resposta 
+
+	}
 
 }
 
