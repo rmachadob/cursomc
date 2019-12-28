@@ -21,14 +21,13 @@ public class CategoriaResource {
 	//para ser uma função REST devo associar com algum dos verbos do HTTP
 	//como é uma requisição básica onde estou obtendo dados, uso o get
 
-
 	@Autowired//para falar com a camada de serviço:
 	private CategoriaService service;
 
 	//tipo do spring que encapsula a resposta com diversos elementos HTTP
 	//<?> pq pode ser qualquer tipo
 	@RequestMapping(value="/{id}", method =RequestMethod.GET)
-	public ResponseEntity<?> find(@PathVariable Integer id){
+	public ResponseEntity<Categoria> find(@PathVariable Integer id){//recebe o parametro na URL
 		Categoria obj = service.find(id);
 		return ResponseEntity.ok().body(obj);//ok para indicar que houve sucesso na operação
 	}
@@ -46,6 +45,14 @@ public class CategoriaResource {
 		//buildAndExpand atribui o novo valor e converte para URI (toUri)
 		return ResponseEntity.created(uri).build();//esse created recebe a URI como argumento e eh o metodo que me devolve o codigo http, nesse caso 201(Created)
 		//build para gerar essa resposta 
+
+	}
+	//esse metodo é uma mistura do GET e do POST, pq ele tem q receber o obj (RequestBody) e receber o parametro da URL (PathVariable)
+	@RequestMapping(value="/{id}", method=RequestMethod.PUT)//esse tipo de requisição vai ter id que nem no GET, por isso value=id
+	public ResponseEntity<Void> update(@RequestBody Categoria obj, @PathVariable Integer id){
+		obj.setId(id);
+		obj = service.update(obj);
+		return ResponseEntity.noContent().build();//retorna conteudo vazio (no content)
 
 	}
 

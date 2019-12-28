@@ -30,6 +30,11 @@ public class CategoriaService {
 		return repo.save(obj);
 		
 	}
+	//update é igual ao insert, a diferença que ele vê é quando o id está valendo nulo(insere) ou nao(atualiza)
+	public Categoria update (Categoria obj) {
+		find(obj.getId());//chamo o find pq ele já busca no banco e se nao existir já lança a exceção
+		return repo.save(obj);
+	}
 
 
 }
