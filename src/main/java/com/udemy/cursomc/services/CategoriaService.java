@@ -3,10 +3,12 @@ package com.udemy.cursomc.services;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import com.udemy.cursomc.domain.Categoria;
 import com.udemy.cursomc.repositories.CategoriaRepository;
+import com.udemy.cursomc.services.exceptions.DataIntegrityException;
 import com.udemy.cursomc.services.exceptions.ObjectNotFoundException;
 
 @Service
@@ -24,11 +26,11 @@ public class CategoriaService {
 		return obj.orElseThrow(() -> new ObjectNotFoundException(//	retorna um objeto ou senão existir, lança um exceção chamando o metodo orElseThrow
 				"Objeto não encontrado! Id: " + id + ", Tipo: " + Categoria.class.getName())); 
 	}
-	
+
 	public Categoria insert(Categoria obj) {
 		obj.setId(null);//garante que realmente insere um obj novo. Se o id estiver valendo algo o metodo save vai entender como atualização e não inserção
 		return repo.save(obj);
-		
+
 	}
 	//update é igual ao insert, a diferença que ele vê é quando o id está valendo nulo(insere) ou nao(atualiza)
 	public Categoria update (Categoria obj) {
@@ -36,5 +38,14 @@ public class CategoriaService {
 		return repo.save(obj);
 	}
 
+	public void delete(Integer id) {
+		find(id);//garante que o id existe senao já dispara a exceção
+		try {
+			repo.deleteById(id);
+		}//essa exceção personalizada vem da camada serviço e é recebida na camada Resource
+		catch(DataIntegrityViolationException e) {
+			throw new DataIntegrityException("Não é possível excluir uma categoria que possui produtos");
+		}
+	}
 
 }

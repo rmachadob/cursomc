@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
+import com.udemy.cursomc.services.exceptions.DataIntegrityException;
 import com.udemy.cursomc.services.exceptions.ObjectNotFoundException;
 
 @ControllerAdvice
@@ -19,6 +20,15 @@ public class ResourceExceptionHandler {
 		StandardError err = new StandardError(HttpStatus.NOT_FOUND.value(), e.getMessage(), System.currentTimeMillis());//passa os dados do erro .value para ir no formato de numero inteiro (ero 404) v.g.
 
 		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(err);//o retorno é essa classe 
+	}
+	
+	
+	@ExceptionHandler(DataIntegrityException.class)
+	public ResponseEntity<StandardError> dataIntegrity(DataIntegrityException e, HttpServletRequest request){
+
+		StandardError err = new StandardError(HttpStatus.BAD_REQUEST.value(), e.getMessage(), System.currentTimeMillis());//muda de not found para bad request para gerar o codigo de erro http pertinente(400)
+
+		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(err);//o retorno é essa classe 
 	}
 
 }
