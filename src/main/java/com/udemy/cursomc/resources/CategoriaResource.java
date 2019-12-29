@@ -1,5 +1,7 @@
 package com.udemy.cursomc.resources;
 import java.net.URI;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -12,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.udemy.cursomc.domain.Categoria;
+import com.udemy.cursomc.dto.CategoriaDTO;
 import com.udemy.cursomc.services.CategoriaService;
 //essa classe será um controlador rest que vai responder por esse endpoint
 @RestController 
@@ -55,12 +58,22 @@ public class CategoriaResource {
 		return ResponseEntity.noContent().build();//retorna conteudo vazio (no content)
 
 	}
-	
+
 	@RequestMapping(value="/{id}", method =RequestMethod.DELETE)
 	public ResponseEntity<Void> delete(@PathVariable Integer id){
 		service.delete(id);
 		return ResponseEntity.noContent().build();
 	}
-}
 
+	@RequestMapping(method=RequestMethod.GET)
+	public ResponseEntity<List<CategoriaDTO>> findAll(){
+		//pra cada elemento dessa lista preciso instanciar o DTO correspondente
+		List<Categoria> list = service.findAll();
+		List<CategoriaDTO> listDto = list.stream().map(obj -> new CategoriaDTO(obj)).collect(Collectors.toList());
+		//stream para percorrer a lista, map para efetuar uma operação pra cada elemento da lista. cada elemento da lista estou apelidando de obj
+		//pra cada elemento obj uso o operador arrow function, ou seja, uma função anônima que recebe o obj e cria o new CategoriaDTO passando o obj como argumento
+		//feito isso eu volto esse stream de objetos para io tipo lista com o Collectors.toList
+		return ResponseEntity.ok().body(listDto);//ok para indicar que houve sucesso na operação
+	}
+}
 

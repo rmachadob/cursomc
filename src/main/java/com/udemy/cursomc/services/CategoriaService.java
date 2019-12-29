@@ -1,4 +1,5 @@
 package com.udemy.cursomc.services;
+import java.util.List;
 //tratamento das exceções no subpacote exception
 import java.util.Optional;
 
@@ -47,5 +48,9 @@ public class CategoriaService {
 			throw new DataIntegrityException("Não é possível excluir uma categoria que possui produtos");
 		}
 	}
-
+	
+	public List<Categoria> findAll(){
+		return repo.findAll();
+	}
+	
 }
