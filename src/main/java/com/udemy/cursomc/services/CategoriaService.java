@@ -5,6 +5,9 @@ import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 
 import com.udemy.cursomc.domain.Categoria;
@@ -51,6 +54,14 @@ public class CategoriaService {
 	
 	public List<Categoria> findAll(){
 		return repo.findAll();
+	}
+	
+	//Page eh classe do SpringData q encapsula infos e operações sobre a paginação
+	//informo qual pag eu quero(page), quantas linhas por pagina(linesperpage), por qual atributo ordenar(orderBy) e qual a ordem (ascendente ou descendente)
+	public Page<Categoria> findPage(Integer page, Integer linesPerPage, String orderBy, String direction){
+		PageRequest pageRequest = PageRequest.of(page, linesPerPage, Direction.valueOf(direction), orderBy);
+		//PageRequest tbm eh do SpringData que prepara as informações para a consulta Direction eh um tipo e preciso converter a String
+		return repo.findAll(pageRequest);//uso sobrecarga de método pra ele usar PageRequest como argumento
 	}
 	
 }

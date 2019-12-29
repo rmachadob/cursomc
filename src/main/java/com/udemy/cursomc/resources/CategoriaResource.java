@@ -4,12 +4,14 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 //anotação com o ctrl shift O ele já acha e importa a dependência correspondente
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
@@ -75,5 +77,22 @@ public class CategoriaResource {
 		//feito isso eu volto esse stream de objetos para io tipo lista com o Collectors.toList
 		return ResponseEntity.ok().body(listDto);//ok para indicar que houve sucesso na operação
 	}
+
+	//endpoint pra pegar a requisição e chamar o metodo de serviço
+	@RequestMapping(value ="/page", method=RequestMethod.GET)
+	public ResponseEntity<Page<CategoriaDTO>> findPage(
+			@RequestParam(value="page", defaultValue="0") Integer page, //@Requestparam para que eles sejam parametros opcionais. o nome do parametro é page e o valor padrão é zero. ou seja, se eu nao informar o parametro da pagina ele vai pra primeira automaticamente
+			@RequestParam(value="linesPerPage", defaultValue="24") Integer linesPerPage, //24 pq é multiplo de 2, 3 e 4, entao fica melhor para a responsividade
+			@RequestParam(value="orderBy", defaultValue="nome") String orderBy, //quero ordenar pelo campo nome
+			@RequestParam(value="direction", defaultValue="ASC") String direction){//padrao ascendente
+
+		//retorna um page de categoria
+		Page<Categoria> list = service.findPage(page, linesPerPage, orderBy, direction);
+		//converte para uma page de CategoriaDTO
+		Page<CategoriaDTO> listDto = list.map(obj -> new CategoriaDTO(obj));	//como o Page já é Java 8 compliance, entao nao preciso nem do stream nem do collect
+
+		return ResponseEntity.ok().body(listDto);//ok para indicar que houve sucesso na operação
+	}
+
 }
 
