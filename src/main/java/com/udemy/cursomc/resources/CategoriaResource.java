@@ -3,6 +3,8 @@ import java.net.URI;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import javax.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
@@ -39,7 +41,11 @@ public class CategoriaResource {
 
 	//void = retorna uma resposta http mas sem corpo
 	@RequestMapping(method=RequestMethod.POST)//POST pq eh pra criar
-	public ResponseEntity<Void> insert(@RequestBody Categoria obj){//@RequestBody faz o JSON ser voncertido para o obj java automaticamente
+	public ResponseEntity<Void> insert(@Valid @RequestBody CategoriaDTO objDto){//@RequestBody faz o JSON ser voncertido para o obj java automaticamente. @Valid para validar antes de seguir com o método
+		
+		Categoria obj = service.fromDTO(objDto);//converte de DTO para obj normal
+		
+		
 		//chama o serviço q insere a nova categoria no BD
 		obj = service.insert(obj);//a operação save do repository retorna um objeto, por isso eu guardo no obj
 
@@ -54,7 +60,10 @@ public class CategoriaResource {
 	}
 	//esse metodo é uma mistura do GET e do POST, pq ele tem q receber o obj (RequestBody) e receber o parametro da URL (PathVariable)
 	@RequestMapping(value="/{id}", method=RequestMethod.PUT)//esse tipo de requisição vai ter id que nem no GET, por isso value=id
-	public ResponseEntity<Void> update(@RequestBody Categoria obj, @PathVariable Integer id){
+	public ResponseEntity<Void> update(@Valid @RequestBody CategoriaDTO objDto, @PathVariable Integer id){
+		
+		Categoria obj = service.fromDTO(objDto);
+		
 		obj.setId(id);
 		obj = service.update(obj);
 		return ResponseEntity.noContent().build();//retorna conteudo vazio (no content)
