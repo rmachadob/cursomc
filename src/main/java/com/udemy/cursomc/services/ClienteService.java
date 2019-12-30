@@ -1,12 +1,19 @@
 package com.udemy.cursomc.services;
+import java.util.List;
 //tratamento das exceções no subpacote exception
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 
 import com.udemy.cursomc.domain.Cliente;
+import com.udemy.cursomc.dto.ClienteDTO;
 import com.udemy.cursomc.repositories.ClienteRepository;
+import com.udemy.cursomc.services.exceptions.DataIntegrityException;
 import com.udemy.cursomc.services.exceptions.ObjectNotFoundException;
 
 @Service
@@ -23,6 +30,51 @@ public class ClienteService {
 		Optional<Cliente> obj = repo.findById(id);
 		return obj.orElseThrow(() -> new ObjectNotFoundException(//	retorna um objeto ou senão existir, lança um exceção chamando o metodo orElseThrow
 				"Objeto não encontrado! Id: " + id + ", Tipo: " + Cliente.class.getName())); 
+	}
+
+	public Cliente update (Cliente obj) {
+		Cliente newObj = find(obj.getId());//instancia um cliente A PARTIR DO BD
+
+		updateData(newObj, obj);//metodo auxiliar para atualizar os dados desse newObj que criei com base no obj que veio como argumento(BD)
+
+		//	find(obj.getId());//chamo o find pq ele já busca no banco e se nao existir já lança a exceção
+		return repo.save(newObj);//salvo o novo obj com os dados atualizados
+	}
+
+	public void delete(Integer id) {
+		find(id);//garante que o id existe senao já dispara a exceção
+		try {
+			repo.deleteById(id);
+		}//essa exceção personalizada vem da camada serviço e é recebida na camada Resource
+		catch(DataIntegrityViolationException e) {
+			throw new DataIntegrityException("Não é possível excluir porque há entidades relacionadas");
+		}
+	}
+
+	public List<Cliente> findAll(){
+		return repo.findAll();
+	}
+
+	//Page eh classe do SpringData q encapsula infos e operações sobre a paginação
+	//informo qual pag eu quero(page), quantas linhas por pagina(linesperpage), por qual atributo ordenar(orderBy) e qual a ordem (ascendente ou descendente)
+	public Page<Cliente> findPage(Integer page, Integer linesPerPage, String orderBy, String direction){
+		PageRequest pageRequest = PageRequest.of(page, linesPerPage, Direction.valueOf(direction), orderBy);
+		//PageRequest tbm eh do SpringData que prepara as informações para a consulta Direction eh um tipo e preciso converter a String
+		return repo.findAll(pageRequest);//uso sobrecarga de método pra ele usar PageRequest como argumento
+	}
+
+	//metodo auxiliar que instancia uma Cliente a prtir de um obj DTO
+	public Cliente fromDTO(ClienteDTO objDto) {//não implementei por enquanto então lanço exceção caso o metodo seja chamado
+		return new Cliente(objDto.getId(), objDto.getNome(), objDto.getEmail(), null, null);//CPF ou CNPJ e tipo do cliente são nulos pq o DTO não tem esse dado
+
+
+	}
+//metodo auxiliar de dentro da classe que uso no update, não precisa ficar visível pra fora
+	private void updateData(Cliente newObj, Cliente obj) {
+		//os unicos dados q eu tenho possibilidade de atualizar no PUT são esses 2
+		newObj.setNome(obj.getNome());
+		newObj.setEmail(obj.getEmail());
+		//esse meu newObj que eu busquei do BD com todos os dados foi atualizado com os dados que forneci no obj 
 	}
 
 

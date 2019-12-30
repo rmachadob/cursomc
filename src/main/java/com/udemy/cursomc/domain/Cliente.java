@@ -50,8 +50,8 @@ public class Cliente implements Serializable{
 		this.nome = nome;
 		this.email = email;
 		this.cpfOuCnpj = cpfOuCnpj;
-		this.tipo = tipo.getCod();
-	}
+		this.tipo = (tipo==null)? null : tipo.getCod();//meu TipoCLiente não pode ser nulo, então uso esse operador condicional ternária
+	}//se meu tipo for igual a nulo vou atribuir nulo, caso contrario eu atribuo o código
 
 	public Integer getId() {
 		return id;
