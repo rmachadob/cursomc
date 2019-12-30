@@ -39,8 +39,12 @@ public class CategoriaService {
 	}
 	//update é igual ao insert, a diferença que ele vê é quando o id está valendo nulo(insere) ou nao(atualiza)
 	public Categoria update (Categoria obj) {
-		find(obj.getId());//chamo o find pq ele já busca no banco e se nao existir já lança a exceção
-		return repo.save(obj);
+		Categoria newObj = find(obj.getId());//instancia um cliente A PARTIR DO BD
+
+		updateData(newObj, obj);//metodo auxiliar para atualizar os dados desse newObj que criei com base no obj que veio como argumento(BD)
+
+		//	find(obj.getId());//chamo o find pq ele já busca no banco e se nao existir já lança a exceção
+		return repo.save(newObj);//salvo o novo obj com os dados atualizados
 	}
 
 	public void delete(Integer id) {
@@ -52,11 +56,11 @@ public class CategoriaService {
 			throw new DataIntegrityException("Não é possível excluir uma categoria que possui produtos");
 		}
 	}
-	
+
 	public List<Categoria> findAll(){
 		return repo.findAll();
 	}
-	
+
 	//Page eh classe do SpringData q encapsula infos e operações sobre a paginação
 	//informo qual pag eu quero(page), quantas linhas por pagina(linesperpage), por qual atributo ordenar(orderBy) e qual a ordem (ascendente ou descendente)
 	public Page<Categoria> findPage(Integer page, Integer linesPerPage, String orderBy, String direction){
@@ -64,10 +68,16 @@ public class CategoriaService {
 		//PageRequest tbm eh do SpringData que prepara as informações para a consulta Direction eh um tipo e preciso converter a String
 		return repo.findAll(pageRequest);//uso sobrecarga de método pra ele usar PageRequest como argumento
 	}
-	
+
 	//metodo auxiliar que instancia uma Categoria a prtir de um obj DTO
 	public Categoria fromDTO(CategoriaDTO objDto) {
 		return new Categoria(objDto.getId(), objDto.getNome());
 	}
 	
+	private void updateData(Categoria newObj, Categoria obj) {
+		//os unicos dados q eu tenho possibilidade de atualizar no PUT são esses 2
+		newObj.setNome(obj.getNome());
+		//esse meu newObj que eu busquei do BD com todos os dados foi atualizado com os dados que forneci no obj 
+	}
+
 }
