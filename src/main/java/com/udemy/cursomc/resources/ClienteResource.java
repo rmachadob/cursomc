@@ -1,4 +1,5 @@
 package com.udemy.cursomc.resources;
+import java.net.URI;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -14,9 +15,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.udemy.cursomc.domain.Cliente;
 import com.udemy.cursomc.dto.ClienteDTO;
+import com.udemy.cursomc.dto.ClienteNewDTO;
 import com.udemy.cursomc.services.ClienteService;
 //essa classe será um controlador rest que vai responder por esse endpoint
 @RestController 
@@ -37,6 +40,29 @@ public class ClienteResource {
 		Cliente obj = service.find(id);
 		return ResponseEntity.ok().body(obj);//ok para indicar que houve sucesso na operação
 	}
+	
+	
+	
+	
+	@RequestMapping(method=RequestMethod.POST)//POST pq eh pra criar
+	public ResponseEntity<Void> insert(@Valid @RequestBody ClienteNewDTO objDto){//@RequestBody faz o JSON ser voncertido para o obj java automaticamente. @Valid para validar antes de seguir com o método
+		
+		Cliente obj = service.fromDTO(objDto);//converte de DTO para obj normal
+		
+		//chama o serviço q insere a nova categoria no BD
+		obj = service.insert(obj);//a operação save do repository retorna um objeto, por isso eu guardo no obj
+
+		URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").
+				buildAndExpand(obj.getId()).toUri();
+		//fromCurrentRequest pega a URI que usamos para inserir, nesse caso categoria
+		//path("/{id}" pega a URI e acrescenta o id do objeto que foi criado
+		//buildAndExpand atribui o novo valor e converte para URI (toUri)
+		return ResponseEntity.created(uri).build();//esse created recebe a URI como argumento e eh o metodo que me devolve o codigo http, nesse caso 201(Created)
+		//build para gerar essa resposta 
+
+	}
+	
+	
 	
 	
 	@RequestMapping(value="/{id}", method=RequestMethod.PUT)//esse tipo de requisição vai ter id que nem no GET, por isso value=id

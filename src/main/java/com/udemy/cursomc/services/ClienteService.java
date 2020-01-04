@@ -9,10 +9,17 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import com.udemy.cursomc.domain.Cidade;
 import com.udemy.cursomc.domain.Cliente;
+import com.udemy.cursomc.domain.Endereco;
+import com.udemy.cursomc.domain.enums.TipoCliente;
 import com.udemy.cursomc.dto.ClienteDTO;
+import com.udemy.cursomc.dto.ClienteNewDTO;
+import com.udemy.cursomc.repositories.CidadeRepository;
 import com.udemy.cursomc.repositories.ClienteRepository;
+import com.udemy.cursomc.repositories.EnderecoRepository;
 import com.udemy.cursomc.services.exceptions.DataIntegrityException;
 import com.udemy.cursomc.services.exceptions.ObjectNotFoundException;
 
@@ -23,6 +30,11 @@ public class ClienteService {
 	//usando injeção de dependência ou inversão de controle
 	@Autowired
 	private ClienteRepository repo;	
+	@Autowired
+	private CidadeRepository cidadeRepository;
+	@Autowired
+	private EnderecoRepository enderecoRepository;
+
 
 	//	 e esse metodo recebe uma função que instancia uma exceção
 	//	para facilitar usamos uma expressão lambda
@@ -30,6 +42,15 @@ public class ClienteService {
 		Optional<Cliente> obj = repo.findById(id);
 		return obj.orElseThrow(() -> new ObjectNotFoundException(//	retorna um objeto ou senão existir, lança um exceção chamando o metodo orElseThrow
 				"Objeto não encontrado! Id: " + id + ", Tipo: " + Cliente.class.getName())); 
+	}
+
+	@Transactional//para garantir que na mesma transação vou salvar no BD endereço e cliente 
+	public Cliente insert(Cliente obj) {
+		obj.setId(null);
+		obj = repo.save(obj);
+		enderecoRepository.saveAll(obj.getEnderecos());//só foi possível pq no meu fromDTO eu associei: cli.getEnderecos().add(end);
+		return obj;
+
 	}
 
 	public Cliente update (Cliente obj) {
@@ -66,10 +87,27 @@ public class ClienteService {
 	//metodo auxiliar que instancia uma Cliente a prtir de um obj DTO
 	public Cliente fromDTO(ClienteDTO objDto) {//não implementei por enquanto então lanço exceção caso o metodo seja chamado
 		return new Cliente(objDto.getId(), objDto.getNome(), objDto.getEmail(), null, null);//CPF ou CNPJ e tipo do cliente são nulos pq o DTO não tem esse dado
-
-
 	}
-//metodo auxiliar de dentro da classe que uso no update, não precisa ficar visível pra fora
+
+	//sobrecarga do método
+	public Cliente fromDTO(ClienteNewDTO objDTO) {
+
+		Cliente cli = new Cliente(null, objDTO.getNome(), objDTO.getEmail(), objDTO.getCpfOuCnpj(), TipoCliente.toEnum(objDTO.getCidadeId()));
+		Cidade cid = new Cidade(objDTO.getCidadeId(), null, null);
+		Endereco end = new Endereco(null, objDTO.getLogradouro(), objDTO.getNumero(), objDTO.getComplemento(), objDTO.getBairro(), objDTO.getCep(), cli, cid);
+
+		cli.getEnderecos().add(end);//incluir o endereço end na lista de endereços do cliente
+		cli.getTelefones().add(objDTO.getTelefone1());//1 telefone é obrigatório ter
+		if(objDTO.getTelefone2()!= null) {
+			cli.getTelefones().add(objDTO.getTelefone2());
+		}
+		if(objDTO.getTelefone3()!= null) {
+			cli.getTelefones().add(objDTO.getTelefone3());
+		}	
+		return cli;
+	}
+
+	//metodo auxiliar de dentro da classe que uso no update, não precisa ficar visível pra fora
 	private void updateData(Cliente newObj, Cliente obj) {
 		//os unicos dados q eu tenho possibilidade de atualizar no PUT são esses 2
 		newObj.setNome(obj.getNome());
