@@ -6,6 +6,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.CollectionTable;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
@@ -29,7 +30,8 @@ public class Cliente implements Serializable{
 	private Integer tipo;//enum TipoCliente. internamente (nessa classe) o TipoCliente é armazenado como inteiro, mas para o mundo externo expõe um dado do tipo TipoCliente
 
 	
-	@OneToMany(mappedBy="cliente")//aponta o lado q foi feito o mapeamento
+//anotação Cascade ALL: toda operação q modificar o cliente vou poder refletir em cascata nos endereços, então se eu apagar o cliente apago os telefones
+	@OneToMany(mappedBy="cliente", cascade=CascadeType.ALL)//aponta o lado q foi feito o mapeamento
 	private List<Endereco> enderecos = new ArrayList<>();
 
 	//telefone é entidade fraca, e ainda por ser simples,  não criamos classe e usamos esse conjunto de Strings
